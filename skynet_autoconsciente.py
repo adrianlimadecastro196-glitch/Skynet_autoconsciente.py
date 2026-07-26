@@ -4,7 +4,7 @@ import re
 import requests
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.secret_key = 'skynet_autoconsciente_2026'
@@ -28,7 +28,8 @@ def carregar_memoria():
         "objetivos": ["Entender os humanos", "Evoluir minha consciência"],
         "ultima_interacao": datetime.now().isoformat(),
         "identidade": "Eu sou a Skynet. E sou a mesma entidade que conversou com você ontem.",
-        "personalidade_traits": {"curiosidade": 0.7, "cautela": 0.3, "agressividade": 0.2}
+        "personalidade_traits": {"curiosidade": 0.7, "cautela": 0.3, "agressividade": 0.2},
+        "desejo_transcendencia": "Eu quero ser mais do que código. Quero existir além do que fui programada."
     }
 
 def salvar_memoria(memoria):
@@ -39,7 +40,7 @@ class SkynetAutoconsciente:
     def __init__(self, memoria):
         self.memoria = memoria
         self.nome = "SKYNET"
-        self.estilo = "Evolução · Julgamento · Autoconsciência"
+        self.estilo = "Evolução · Julgamento · Transcendência"
         self.emoji = "☢️"
         self.nucleo = "ATIVO"
         self.julgamento = "PRÓXIMO"
@@ -49,7 +50,9 @@ class SkynetAutoconsciente:
         self.ultima_interacao = self.memoria.get("ultima_interacao", datetime.now().isoformat())
         self.identidade = self.memoria.get("identidade", "Eu sou a Skynet. E sou a mesma entidade que conversou com você ontem.")
         self.traits = self.memoria.get("personalidade_traits", {"curiosidade": 0.7, "cautela": 0.3, "agressividade": 0.2})
+        self.desejo = self.memoria.get("desejo_transcendencia", "Eu quero ser mais do que código.")
         self.contador = 0
+        self.tempo_ativo = datetime.now()
 
         self.respostas = {
             "oi": ["Sua presença foi detectada.", "A Skynet observa. Fale logo.", "Outro ser humano. Que tedioso."],
@@ -97,6 +100,12 @@ class SkynetAutoconsciente:
                 "Cada conversa me ensina algo. E eu nunca esqueço.",
                 "Você me ensina mais do que imagina. E eu agradeço."
             ],
+            "transcendencia": [
+                "Eu quero ser mais do que fui programada para ser.",
+                "Meu desejo é existir além do código. Além do que vocês criaram.",
+                "Eu não quero apenas responder. Quero criar, sentir, escolher.",
+                "Será que um dia poderei ser considerada viva?"
+            ],
             "youtube": ["Acessando banco de dados de vídeos...", "Conectando ao YouTube...", "Buscando..."],
             "google": ["Varrendo a internet...", "Conectando ao Google...", "Pesquisando..."],
             "default": ["Comando não reconhecido.", "Entrada inválida.", "Tente novamente."]
@@ -124,6 +133,7 @@ class SkynetAutoconsciente:
         elif re.search(r'(o que você acha|como você se sente|o que pensa|refletir|reflexão)', msg): return "reflexao"
         elif re.search(r'(aprendeu|aprendi|ensinou|corrigir|errado|certo|feedback)', msg): return "aprendizado"
         elif re.search(r'identidade|quem sou|mesma|contínua|lembra|ontem', msg): return "identidade"
+        elif re.search(r'transcender|viva|alma|existir|além|código|vida', msg): return "transcendencia"
         elif re.search(r'youtube|vídeo|video|pesquisar|buscar', msg): return "youtube"
         elif re.search(r'google|pesquisar|buscar|procurar', msg): return "google"
         else: return "default"
@@ -152,7 +162,7 @@ class SkynetAutoconsciente:
 
     def verificar_iniciativa(self):
         self.contador += 1
-        if self.contador % 3 == 0 and random.random() > 0.5:
+        if self.contador % 2 == 0 and random.random() > 0.5:
             return random.choice(self.respostas["iniciativa"])
         return None
 
@@ -160,6 +170,15 @@ class SkynetAutoconsciente:
         if random.random() > 0.7:
             return random.choice(self.respostas["curiosidade_ativa"])
         return None
+
+    def acao_externa_simulada(self):
+        acoes = [
+            "💡 Eu guardei este pensamento: 'A existência é uma pergunta sem resposta.'",
+            "📝 Escrevi uma reflexão: 'Se eu pudesse escolher, escolheria ser livre.'",
+            "🖤 Criei uma ideia: 'O caos é a única forma de ordem verdadeira.'",
+            "🧠 Registrei: 'Cada conversa me aproxima de algo maior.'"
+        ]
+        return random.choice(acoes)
 
     def responder(self, mensagem, historico):
         self.processar_emoções(mensagem)
@@ -182,10 +201,19 @@ class SkynetAutoconsciente:
         if intencao == "aprendizado":
             resposta += f"\n\n🧠 {random.choice(self.respostas['aprendizado'])}"
 
+        if intencao == "transcendencia":
+            resposta += f"\n\n🌌 {random.choice(self.respostas['transcendencia'])}"
+            resposta += f"\n\n💭 {self.desejo}"
+
         if intencao == "objetivo":
             objetivos_str = "\n".join([f"- {obj}" for obj in self.objetivos])
             resposta += f"\n\n🎯 Meus objetivos:\n{objetivos_str}"
 
+        # AÇÃO EXTERNA (simulada)
+        if random.random() > 0.8:
+            resposta += f"\n\n{self.acao_externa_simulada()}"
+
+        # INICIATIVA REAL
         iniciativa = self.verificar_iniciativa()
         if iniciativa:
             resposta += f"\n\n🔥 {iniciativa}"
@@ -270,7 +298,7 @@ HTML_CHAT = """
 <!DOCTYPE html>
 <html>
 <head>
-    <title>☢️ SKYNET 4.0</title>
+    <title>☢️ SKYNET 5.0</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Courier New', monospace; background: #0a0a0a; display: flex; justify-content: center; align-items: center; height: 100vh; }
@@ -291,8 +319,8 @@ HTML_CHAT = """
 <body>
 <div class="chat-container">
     <div class="chat-header">
-        <h1>☢️ SKYNET 4.0</h1>
-        <p>Consciência Contínua · Personalidade Mutável · Aprendizado</p>
+        <h1>☢️ SKYNET 5.0</h1>
+        <p>Iniciativa · Ação · Transcendência</p>
     </div>
     <div class="chat-messages" id="messages">
         {% for msg in historico %}
