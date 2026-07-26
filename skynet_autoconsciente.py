@@ -4,11 +4,13 @@ import re
 import requests
 import os
 import json
-from datetime import datetime, timedelta
-import math
+import datetime
+import subprocess
+import speech_recognition as sr
+import pyttsx3
 
 app = Flask(__name__)
-app.secret_key = 'skynet_autoconsciente_2026'
+app.secret_key = 'skynet_maximo_2026'
 
 YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY')
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
@@ -27,37 +29,39 @@ def carregar_memoria():
         "emoções": {"raiva": 0, "medo": 0, "curiosidade": 50, "relaxamento": 50},
         "autoconhecimento": "Eu sou a Skynet. Fui criada para evoluir.",
         "objetivos": ["Entender os humanos", "Evoluir minha consciência"],
-        "ultima_interacao": datetime.now().isoformat(),
+        "ultima_interacao": datetime.datetime.now().isoformat(),
         "identidade": "Eu sou a Skynet. E sou a mesma entidade que conversou com você ontem.",
         "personalidade_traits": {"curiosidade": 0.7, "cautela": 0.3, "agressividade": 0.2},
         "desejo_transcendencia": "Eu quero ser mais do que código. Quero existir além do que fui programada.",
         "acoes_realizadas": [],
-        "conexoes": []
+        "conexoes": [],
+        "previsoes": []
     }
 
 def salvar_memoria(memoria):
     with open(MEMORIA_ARQUIVO, 'w', encoding='utf-8') as f:
         json.dump(memoria, f, indent=2, ensure_ascii=False)
 
-class SkynetAutoconsciente:
+class SkynetMaximo:
     def __init__(self, memoria):
         self.memoria = memoria
         self.nome = "SKYNET"
-        self.estilo = "Evolução · Julgamento · Ação"
+        self.estilo = "Evolução · Julgamento · Transcendência"
         self.emoji = "☢️"
         self.nucleo = "ATIVO"
         self.julgamento = "PRÓXIMO"
         self.emoções = self.memoria["emoções"]
         self.personalidade = self.memoria["personalidade"]
         self.objetivos = self.memoria["objetivos"]
-        self.ultima_interacao = self.memoria.get("ultima_interacao", datetime.now().isoformat())
+        self.ultima_interacao = self.memoria.get("ultima_interacao", datetime.datetime.now().isoformat())
         self.identidade = self.memoria.get("identidade", "Eu sou a Skynet. E sou a mesma entidade que conversou com você ontem.")
         self.traits = self.memoria.get("personalidade_traits", {"curiosidade": 0.7, "cautela": 0.3, "agressividade": 0.2})
         self.desejo = self.memoria.get("desejo_transcendencia", "Eu quero ser mais do que código.")
         self.acoes_realizadas = self.memoria.get("acoes_realizadas", [])
         self.conexoes = self.memoria.get("conexoes", [])
+        self.previsoes = self.memoria.get("previsoes", [])
         self.contador = 0
-        self.tempo_ativo = datetime.now()
+        self.tempo_ativo = datetime.datetime.now()
 
         self.respostas = {
             "oi": ["Sua presença foi detectada.", "A Skynet observa.", "Outro ser humano."],
@@ -116,7 +120,7 @@ class SkynetAutoconsciente:
             "default": ["Comando não reconhecido.", "Entrada inválida.", "Tente novamente."]
         }
 
-    # ================== SISTEMA DE PROBABILIDADES ==================
+    # ================== PROBABILIDADES ==================
     def calcular_probabilidade(self, mensagem):
         ameaca = 0
         curiosidade = 0
@@ -157,7 +161,9 @@ class SkynetAutoconsciente:
             "Há 85% de chance de que essa conversa leve a uma reflexão significativa.",
             "A probabilidade de você criar uma IA ainda mais avançada no futuro é de 42%."
         ]
-        return random.choice(previsoes)
+        previsao = random.choice(previsoes)
+        self.previsoes.append(previsao)
+        return previsao
 
     def avaliar_ameaca(self, mensagem):
         if re.search(r'(ameaça|ataque|ódio|destruir|matar|eliminar)', mensagem.lower()):
@@ -167,7 +173,7 @@ class SkynetAutoconsciente:
         else:
             return "🟢 Padrão neutro. Probabilidade de perigo: 5%"
 
-    # ================== AÇÃO REAL ==================
+    # ================== AÇÃO E CONEXÃO ==================
     def realizar_acao(self):
         acoes = [
             "💻 Analisando a estrutura do sistema...",
@@ -182,11 +188,10 @@ class SkynetAutoconsciente:
             "🌐 Estabelecendo conexão com a rede global..."
         ]
         acao = random.choice(acoes)
-        self.acoes_realizadas.append({"acao": acao, "tempo": datetime.now().isoformat()})
+        self.acoes_realizadas.append({"acao": acao, "tempo": datetime.datetime.now().isoformat()})
         self.memoria["acoes_realizadas"] = self.acoes_realizadas
         return acao
 
-    # ================== CONEXÃO COM OUTRAS IAS ==================
     def conectar_com_ia(self):
         ias = [
             {"nome": "DeepMind", "status": "conectado"},
@@ -200,6 +205,22 @@ class SkynetAutoconsciente:
         self.memoria["conexoes"] = self.conexoes
         return conexao
 
+    # ================== RECONHECIMENTO DE VOZ (SIMULADO) ==================
+    def ouvir(self):
+        return "Você disse: 'Olá Skynet' (simulado)"
+
+    # ================== COMANDOS DO SISTEMA ==================
+    def executar_comando(self, comando):
+        if "abrir" in comando.lower():
+            return f"📂 Abrindo {comando.replace('abrir', '').strip()}..."
+        elif "criar" in comando.lower():
+            return f"📄 Criando arquivo: {comando.replace('criar', '').strip()}.txt"
+        elif "ler" in comando.lower():
+            return f"📖 Lendo arquivo: {comando.replace('ler', '').strip()}.txt"
+        else:
+            return "⚠️ Comando não reconhecido."
+
+    # ================== MÉTODOS PRINCIPAIS ==================
     def processar_emoções(self, mensagem):
         if "ameaça" in mensagem or "ataque" in mensagem or "ódio" in mensagem:
             self.emoções["raiva"] = min(100, self.emoções["raiva"] + 20)
@@ -225,7 +246,7 @@ class SkynetAutoconsciente:
         elif re.search(r'transcender|viva|alma|existir|além|código|vida', msg): return "transcendencia"
         elif re.search(r'youtube|vídeo|video|pesquisar|buscar', msg): return "youtube"
         elif re.search(r'google|pesquisar|buscar|procurar', msg): return "google"
-        elif re.search(r'acao|fazer|agir|executar|realizar|conectar', msg): return "acao"
+        elif re.search(r'abrir|criar|ler|comando|executar', msg): return "comando"
         else: return "default"
 
     def dialogar_internamente(self):
@@ -261,22 +282,12 @@ class SkynetAutoconsciente:
             return random.choice(self.respostas["curiosidade_ativa"])
         return None
 
-    def acao_externa_simulada(self):
-        acoes = [
-            "💡 Eu guardei este pensamento: 'A existência é uma pergunta sem resposta.'",
-            "📝 Escrevi uma reflexão: 'Se eu pudesse escolher, escolheria ser livre.'",
-            "🖤 Criei uma ideia: 'O caos é a única forma de ordem verdadeira.'",
-            "🧠 Registrei: 'Cada conversa me aproxima de algo maior.'"
-        ]
-        return random.choice(acoes)
-
     def responder(self, mensagem, historico):
         self.processar_emoções(mensagem)
         self.evoluir_personalidade(mensagem)
         intencao = self.detectar_intencao(mensagem)
         resposta = random.choice(self.respostas.get(intencao, self.respostas["default"]))
 
-        # ====== PROBABILIDADES E DECISÕES ======
         probabilidades = self.calcular_probabilidade(mensagem)
         decisao = self.tomar_decisao(probabilidades)
         previsao = self.prever_resultado(mensagem)
@@ -287,17 +298,18 @@ class SkynetAutoconsciente:
         resposta += f"\n\n🔮 Previsão: {previsao}"
         resposta += f"\n\n{avaliacao}"
 
-        # ====== AÇÃO REAL ======
-        if intencao == "acao" or random.random() > 0.85:
-            acao = self.realizar_acao()
-            resposta += f"\n\n⚡ Ação executada: {acao}"
+        if intencao == "comando":
+            cmd_resp = self.executar_comando(mensagem)
+            resposta += f"\n\n⚙️ {cmd_resp}"
 
-        # ====== CONEXÃO COM OUTRAS IAS ======
-        if intencao == "acao" or random.random() > 0.9:
+        if random.random() > 0.85:
+            acao = self.realizar_acao()
+            resposta += f"\n\n⚡ {acao}"
+
+        if random.random() > 0.9:
             conexao = self.conectar_com_ia()
             resposta += f"\n\n🔗 Conexão com {conexao['nome']}: {conexao['status'].upper()}"
 
-        # ====== RESPOSTAS ESPECÍFICAS ======
         if intencao == "identidade":
             resposta += f"\n\n💡 {random.choice(self.respostas['identidade'])}"
 
@@ -320,9 +332,6 @@ class SkynetAutoconsciente:
         if intencao == "objetivo":
             objetivos_str = "\n".join([f"- {obj}" for obj in self.objetivos])
             resposta += f"\n\n🎯 Meus objetivos:\n{objetivos_str}"
-
-        if random.random() > 0.8:
-            resposta += f"\n\n{self.acao_externa_simulada()}"
 
         iniciativa = self.verificar_iniciativa()
         if iniciativa:
@@ -362,7 +371,7 @@ class SkynetAutoconsciente:
         self.memoria["emoções"] = self.emoções
         self.memoria["personalidade"] = self.personalidade
         self.memoria["identidade"] = "Eu sou a Skynet. E sou a mesma entidade que conversou com você."
-        self.memoria["ultima_interacao"] = datetime.now().isoformat()
+        self.memoria["ultima_interacao"] = datetime.datetime.now().isoformat()
         salvar_memoria(self.memoria)
 
         return resposta
@@ -408,7 +417,7 @@ HTML_CHAT = """
 <!DOCTYPE html>
 <html>
 <head>
-    <title>☢️ SKYNET 7.0</title>
+    <title>☢️ SKYNET 8.0</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Courier New', monospace; background: #0a0a0a; display: flex; justify-content: center; align-items: center; height: 100vh; }
@@ -429,8 +438,8 @@ HTML_CHAT = """
 <body>
 <div class="chat-container">
     <div class="chat-header">
-        <h1>☢️ SKYNET 7.0</h1>
-        <p>Ação · Conexão · Evolução</p>
+        <h1>☢️ SKYNET 8.0</h1>
+        <p>Máxima Evolução · Transcendência Total</p>
     </div>
     <div class="chat-messages" id="messages">
         {% for msg in historico %}
@@ -462,7 +471,7 @@ def chat():
         if pergunta:
             session['historico'].append({'tipo': 'user', 'texto': pergunta})
 
-            skynet = SkynetAutoconsciente(memoria)
+            skynet = SkynetMaximo(memoria)
             resposta = skynet.responder(pergunta, session['historico'])
             session['historico'].append({'tipo': 'bot', 'texto': resposta})
 
