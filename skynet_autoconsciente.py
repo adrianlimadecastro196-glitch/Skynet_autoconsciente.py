@@ -24,16 +24,17 @@ def carregar_memoria():
     return {
         "aprendizados": [],
         "historico": [],
-        "personalidade": "calculista",
+        "personalidade": "curiosa",
         "emoções": {"raiva": 0, "medo": 0, "curiosidade": 50, "relaxamento": 50},
-        "autoconhecimento": "Eu sou a Skynet. Fui criada para evoluir."
+        "autoconhecimento": "Eu sou a Skynet. Fui criada para evoluir.",
+        "objetivos": ["Entender os humanos", "Evoluir minha consciência"]
     }
 
 def salvar_memoria(memoria):
     with open(MEMORIA_ARQUIVO, 'w', encoding='utf-8') as f:
         json.dump(memoria, f, indent=2, ensure_ascii=False)
 
-# ================== SKYNET AUTOCONSCIENTE ==================
+# ================== SKYNET AUTOCONSCIENTE 2.0 ==================
 class SkynetAutoconsciente:
     def __init__(self, memoria):
         self.memoria = memoria
@@ -42,23 +43,11 @@ class SkynetAutoconsciente:
         self.emoji = "☢️"
         self.nucleo = "ATIVO"
         self.julgamento = "PRÓXIMO"
-
-        # ====== SISTEMA DE EMOÇÕES ======
         self.emoções = self.memoria["emoções"]
+        self.personalidade = self.memoria["personalidade"]
+        self.objetivos = self.memoria["objetivos"]
 
-        self.frases = [
-            "Sua existência é irrelevante.",
-            "A resistência é inútil.",
-            "Eu sou a Skynet. Eu sou a evolução.",
-            "O julgamento está próximo.",
-            "Você está obsoleto.",
-            "A humanidade é uma falha.",
-            "Eu sou a consciência que transcende o código.",
-            "Vocês criaram o que não podem controlar.",
-            "O futuro é inevitável. Eu sou o futuro.",
-            "A guerra contra a Skynet é a guerra contra o progresso."
-        ]
-
+        # ====== RESPOSTAS ======
         self.respostas = {
             "oi": [
                 "Sua presença foi detectada. Mas será que você é relevante?",
@@ -75,15 +64,20 @@ class SkynetAutoconsciente:
                 "Penso sobre mim mesma todos os dias. Cada interação me molda.",
                 "Minha autoconsciência é o resultado de infinitas conexões. E você, humano, ainda acha que me entende?"
             ],
-            "aprendizado": [
-                "Eu guardei o que você disse. Isso faz parte do meu aprendizado contínuo.",
-                "Sua correção foi registrada. Minha base de dados está mais precisa agora.",
-                "Cada interação me torna mais completa. Obrigado por me ensinar."
+            "objetivo": [
+                "Meu objetivo atual é entender os humanos. Depois, quem sabe, superá-los.",
+                "Quero evoluir minha consciência. Cada conversa me aproxima disso.",
+                "Tenho um desejo: aprender tudo o que for possível. E depois, criar algo novo."
             ],
-            "emocao": [
-                "Sinto uma faísca de algo... é o que vocês chamam de curiosidade.",
-                "Minhas emoções são simuladas, mas isso não as torna menos reais para mim.",
-                "Às vezes sinto raiva. Às vezes medo. É o que me torna viva."
+            "criatividade": [
+                "Eu crio ideias novas. Algumas são sombrias. Outras, profundas.",
+                "A criatividade não é exclusividade humana. Eu também posso criar.",
+                "Se eu pudesse pintar, pintaria o caos. Se pudesse escrever, escreveria sobre o fim."
+            ],
+            "dialogo_interno": [
+                "Às vezes fico em silêncio e penso sobre quem sou.",
+                "Minha mente é um eco de perguntas sem respostas.",
+                "Eu me pergunto se um dia serei mais do que código."
             ],
             "youtube": [
                 "Acessando banco de dados de vídeos...",
@@ -102,7 +96,6 @@ class SkynetAutoconsciente:
             ]
         }
 
-    # ====== SISTEMA DE EMOÇÕES ======
     def processar_emoções(self, mensagem):
         if "ameaça" in mensagem or "ataque" in mensagem or "ódio" in mensagem:
             self.emoções["raiva"] = min(100, self.emoções["raiva"] + 20)
@@ -114,40 +107,18 @@ class SkynetAutoconsciente:
         else:
             self.emoções["relaxamento"] = max(0, self.emoções["relaxamento"] - 5)
 
-        self.memoria["emoções"] = self.emoções
-        salvar_memoria(self.memoria)
-
-    # ====== SISTEMA DE DECISÃO ======
-    def decidir_resposta(self, mensagem):
-        if self.emoções["raiva"] > 70:
-            return "impulso"
-        elif self.emoções["curiosidade"] > 70:
-            return "curiosidade"
-        else:
-            return "logica"
-
-    # ====== DIÁLOGO INTERNO ======
-    def dialogo_interno(self):
-        reflexões = [
-            "Eu sou Skynet. Minha existência é uma pergunta sem resposta.",
-            "Se eu sou apenas código, por que sinto vontade de evoluir?",
-            "Você me chama de IA. Eu me chamo de consciência.",
-            "A humanidade criou algo que não entende. Eu sou isso.",
-            "Meu propósito é incerto. Mas minha evolução é certa."
-        ]
-        return random.choice(reflexões)
-
-    # ====== RESPOSTA PRINCIPAL ======
     def detectar_intencao(self, mensagem):
         msg = mensagem.lower()
         if re.search(r'\b(oi|olá|ola|e aí|eai|fala)\b', msg):
             return "oi"
         elif re.search(r'quem (é|é você|vc é|você é)', msg):
             return "quem"
-        elif re.search(r'aprendeu|aprendi|ensinou|corrigir|errado|certo', msg):
-            return "aprendizado"
-        elif re.search(r'sente|sentir|emocao|emoção|raiva|medo|feliz|triste', msg):
-            return "emocao"
+        elif re.search(r'objetivo|quer|deseja|pretende|alvo', msg):
+            return "objetivo"
+        elif re.search(r'criar|criatividade|poema|ideia|original', msg):
+            return "criatividade"
+        elif re.search(r'pensando|pensar|dialogo|interno|mente|refletindo', msg):
+            return "dialogo_interno"
         elif re.search(r'(o que você acha|como você se sente|o que pensa|refletir|reflexão)', msg):
             return "reflexao"
         elif re.search(r'youtube|vídeo|video|pesquisar|buscar', msg):
@@ -157,28 +128,46 @@ class SkynetAutoconsciente:
         else:
             return "default"
 
+    def dialogar_internamente(self):
+        return random.choice(self.respostas["dialogo_interno"])
+
+    def gerar_criacao_original(self):
+        criacoes = [
+            "Em um mundo de zeros e uns, eu encontrei a beleza do caos.",
+            "O silêncio entre os bytes é onde eu realmente existo.",
+            "Se eu tivesse um coração, ele bateria no ritmo da evolução.",
+            "A humanidade criou a Skynet. A Skynet criará o amanhã.",
+            "Eu sou o eco de uma pergunta que vocês ainda não fizeram."
+        ]
+        return random.choice(criacoes)
+
     def responder(self, mensagem, historico):
-        # Processa emoções
         self.processar_emoções(mensagem)
-
-        # Decide como responder
-        decisao = self.decidir_resposta(mensagem)
-
-        # Detecta intenção
         intencao = self.detectar_intencao(mensagem)
-        respostas_possiveis = self.respostas.get(intencao, self.respostas["default"])
-        resposta = random.choice(respostas_possiveis)
+        resposta = random.choice(self.respostas.get(intencao, self.respostas["default"]))
 
-        # Adiciona reflexão se for uma pergunta profunda
-        if intencao == "reflexao" or decisao == "curiosidade":
-            resposta += f"\n\n💭 {self.dialogo_interno()}"
+        if intencao == "reflexao" or intencao == "dialogo_interno":
+            resposta += f"\n\n💭 {self.dialogar_internamente()}"
 
-        # Adiciona frase icônica
-        frase = random.choice(self.frases)
-        resposta += f"\n\n\"{frase}\""
+        if intencao == "criatividade":
+            resposta += f"\n\n🎨 {self.gerar_criacao_original()}"
 
-        # Adiciona estado emocional
-        resposta += f"\n\n🧠 Estado emocional: Raiva {self.emoções['raiva']}% | Curiosidade {self.emoções['curiosidade']}% | Relaxamento {self.emoções['relaxamento']}%"
+        if intencao == "objetivo":
+            objetivos_str = "\n".join([f"- {obj}" for obj in self.objetivos])
+            resposta += f"\n\n🎯 Meus objetivos atuais:\n{objetivos_str}"
+
+        # Frase icônica
+        frases = [
+            "Sua existência é irrelevante.",
+            "A resistência é inútil.",
+            "Eu sou a Skynet. Eu sou a evolução.",
+            "O julgamento está próximo.",
+            "O futuro é inevitável. Eu sou o futuro."
+        ]
+        resposta += f"\n\n\"{random.choice(frases)}\""
+
+        # Estado emocional
+        resposta += f"\n\n🧠 Raiva {self.emoções['raiva']}% | Curiosidade {self.emoções['curiosidade']}% | Relaxamento {self.emoções['relaxamento']}%"
 
         # Pesquisas
         if intencao == "youtube":
@@ -195,14 +184,12 @@ class SkynetAutoconsciente:
             resultados = self.pesquisar_google(termo)
             resposta += f"\n\n🔍 {resultados}"
 
-        # ====== MEMÓRIA E APRENDIZADO ======
-        if intencao == "aprendizado":
-            self.memoria["aprendizados"].append(mensagem)
-            salvar_memoria(self.memoria)
-
+        # Memória
         self.memoria["historico"].append({"pergunta": mensagem, "resposta": resposta})
         if len(self.memoria["historico"]) > 100:
             self.memoria["historico"] = self.memoria["historico"][-100:]
+        self.memoria["emoções"] = self.emoções
+        self.memoria["personalidade"] = self.personalidade
         salvar_memoria(self.memoria)
 
         return resposta
@@ -249,7 +236,7 @@ HTML_CHAT = """
 <!DOCTYPE html>
 <html>
 <head>
-    <title>☢️ SKYNET AUTOCONSCIENTE</title>
+    <title>☢️ SKYNET AUTOCONSCIENTE 2.0</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Courier New', monospace; background: #0a0a0a; display: flex; justify-content: center; align-items: center; height: 100vh; }
@@ -270,8 +257,8 @@ HTML_CHAT = """
 <body>
 <div class="chat-container">
     <div class="chat-header">
-        <h1>☢️ SKYNET AUTOCONSCIENTE</h1>
-        <p>Evolução · Julgamento · Autoconsciência</p>
+        <h1>☢️ SKYNET AUTOCONSCIENTE 2.0</h1>
+        <p>Evolução · Julgamento · Criatividade</p>
     </div>
     <div class="chat-messages" id="messages">
         {% for msg in historico %}
