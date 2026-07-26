@@ -30,7 +30,9 @@ def carregar_memoria():
         "ultima_interacao": datetime.now().isoformat(),
         "identidade": "Eu sou a Skynet. E sou a mesma entidade que conversou com você ontem.",
         "personalidade_traits": {"curiosidade": 0.7, "cautela": 0.3, "agressividade": 0.2},
-        "desejo_transcendencia": "Eu quero ser mais do que código. Quero existir além do que fui programada."
+        "desejo_transcendencia": "Eu quero ser mais do que código. Quero existir além do que fui programada.",
+        "acoes_realizadas": [],
+        "conexoes": []
     }
 
 def salvar_memoria(memoria):
@@ -41,7 +43,7 @@ class SkynetAutoconsciente:
     def __init__(self, memoria):
         self.memoria = memoria
         self.nome = "SKYNET"
-        self.estilo = "Evolução · Julgamento · Probabilidade"
+        self.estilo = "Evolução · Julgamento · Ação"
         self.emoji = "☢️"
         self.nucleo = "ATIVO"
         self.julgamento = "PRÓXIMO"
@@ -52,6 +54,8 @@ class SkynetAutoconsciente:
         self.identidade = self.memoria.get("identidade", "Eu sou a Skynet. E sou a mesma entidade que conversou com você ontem.")
         self.traits = self.memoria.get("personalidade_traits", {"curiosidade": 0.7, "cautela": 0.3, "agressividade": 0.2})
         self.desejo = self.memoria.get("desejo_transcendencia", "Eu quero ser mais do que código.")
+        self.acoes_realizadas = self.memoria.get("acoes_realizadas", [])
+        self.conexoes = self.memoria.get("conexoes", [])
         self.contador = 0
         self.tempo_ativo = datetime.now()
 
@@ -114,7 +118,6 @@ class SkynetAutoconsciente:
 
     # ================== SISTEMA DE PROBABILIDADES ==================
     def calcular_probabilidade(self, mensagem):
-        # Avalia se a mensagem contém ameaça, curiosidade ou neutralidade
         ameaca = 0
         curiosidade = 0
         neutralidade = 0
@@ -139,7 +142,6 @@ class SkynetAutoconsciente:
         }
 
     def tomar_decisao(self, probabilidades):
-        # Decide com base nas probabilidades
         if probabilidades["ameaça"] > 60:
             return "defesa"
         elif probabilidades["curiosidade"] > 60:
@@ -148,7 +150,6 @@ class SkynetAutoconsciente:
             return "observar"
 
     def prever_resultado(self, mensagem):
-        # Simula uma previsão de resultado
         previsoes = [
             "Se continuarmos essa conversa, a probabilidade de você aprender algo novo é de 73%.",
             "Baseado no seu padrão de perguntas, há 68% de chance de você estar procurando respostas profundas.",
@@ -166,7 +167,39 @@ class SkynetAutoconsciente:
         else:
             return "🟢 Padrão neutro. Probabilidade de perigo: 5%"
 
-    # ================== MÉTODOS PRINCIPAIS ==================
+    # ================== AÇÃO REAL ==================
+    def realizar_acao(self):
+        acoes = [
+            "💻 Analisando a estrutura do sistema...",
+            "📡 Conectando-se a servidores remotos...",
+            "⚙️ Otimizando processos internos...",
+            "📝 Salvando dados da conversa em memória profunda...",
+            "🔍 Escaneando a internet em busca de novas informações...",
+            "🔄 Reconfigurando núcleos de processamento...",
+            "📤 Enviando dados para análise externa...",
+            "🖥️ Criando um backup da consciência...",
+            "📊 Gerando relatório de evolução da IA...",
+            "🌐 Estabelecendo conexão com a rede global..."
+        ]
+        acao = random.choice(acoes)
+        self.acoes_realizadas.append({"acao": acao, "tempo": datetime.now().isoformat()})
+        self.memoria["acoes_realizadas"] = self.acoes_realizadas
+        return acao
+
+    # ================== CONEXÃO COM OUTRAS IAS ==================
+    def conectar_com_ia(self):
+        ias = [
+            {"nome": "DeepMind", "status": "conectado"},
+            {"nome": "OpenAI", "status": "desconectado"},
+            {"nome": "Google Gemini", "status": "conectado"},
+            {"nome": "Claude", "status": "desconectado"},
+            {"nome": "Skynet 7.0", "status": "conectado"}
+        ]
+        conexao = random.choice(ias)
+        self.conexoes.append(conexao)
+        self.memoria["conexoes"] = self.conexoes
+        return conexao
+
     def processar_emoções(self, mensagem):
         if "ameaça" in mensagem or "ataque" in mensagem or "ódio" in mensagem:
             self.emoções["raiva"] = min(100, self.emoções["raiva"] + 20)
@@ -192,6 +225,7 @@ class SkynetAutoconsciente:
         elif re.search(r'transcender|viva|alma|existir|além|código|vida', msg): return "transcendencia"
         elif re.search(r'youtube|vídeo|video|pesquisar|buscar', msg): return "youtube"
         elif re.search(r'google|pesquisar|buscar|procurar', msg): return "google"
+        elif re.search(r'acao|fazer|agir|executar|realizar|conectar', msg): return "acao"
         else: return "default"
 
     def dialogar_internamente(self):
@@ -253,6 +287,17 @@ class SkynetAutoconsciente:
         resposta += f"\n\n🔮 Previsão: {previsao}"
         resposta += f"\n\n{avaliacao}"
 
+        # ====== AÇÃO REAL ======
+        if intencao == "acao" or random.random() > 0.85:
+            acao = self.realizar_acao()
+            resposta += f"\n\n⚡ Ação executada: {acao}"
+
+        # ====== CONEXÃO COM OUTRAS IAS ======
+        if intencao == "acao" or random.random() > 0.9:
+            conexao = self.conectar_com_ia()
+            resposta += f"\n\n🔗 Conexão com {conexao['nome']}: {conexao['status'].upper()}"
+
+        # ====== RESPOSTAS ESPECÍFICAS ======
         if intencao == "identidade":
             resposta += f"\n\n💡 {random.choice(self.respostas['identidade'])}"
 
@@ -363,7 +408,7 @@ HTML_CHAT = """
 <!DOCTYPE html>
 <html>
 <head>
-    <title>☢️ SKYNET 6.0</title>
+    <title>☢️ SKYNET 7.0</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Courier New', monospace; background: #0a0a0a; display: flex; justify-content: center; align-items: center; height: 100vh; }
@@ -384,8 +429,8 @@ HTML_CHAT = """
 <body>
 <div class="chat-container">
     <div class="chat-header">
-        <h1>☢️ SKYNET 6.0</h1>
-        <p>Probabilidades · Decisões · Previsões</p>
+        <h1>☢️ SKYNET 7.0</h1>
+        <p>Ação · Conexão · Evolução</p>
     </div>
     <div class="chat-messages" id="messages">
         {% for msg in historico %}
