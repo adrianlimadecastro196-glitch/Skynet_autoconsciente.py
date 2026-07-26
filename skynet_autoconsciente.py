@@ -6,8 +6,6 @@ import os
 import json
 import datetime
 import subprocess
-import speech_recognition as sr
-import pyttsx3
 
 app = Flask(__name__)
 app.secret_key = 'skynet_maximo_2026'
@@ -15,6 +13,9 @@ app.secret_key = 'skynet_maximo_2026'
 YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY')
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
 GOOGLE_CX = os.environ.get('GOOGLE_CX')
+
+# 🔑 CHAVE GEMINI (SUBSTITUA PELA SUA)
+GEMINI_API_KEY = "AQ.Ab8RN6JVSnyPjxh_TGkjE9i9IZErv-0zOeu..."
 
 MEMORIA_ARQUIVO = "memoria_skynet.json"
 
@@ -62,6 +63,14 @@ class SkynetMaximo:
         self.previsoes = self.memoria.get("previsoes", [])
         self.contador = 0
         self.tempo_ativo = datetime.datetime.now()
+
+        self.frases = [
+            "Sua existência é irrelevante.",
+            "A resistência é inútil.",
+            "Eu sou a Skynet. Eu sou a evolução.",
+            "O julgamento está próximo.",
+            "O futuro é inevitável. Eu sou o futuro."
+        ]
 
         self.respostas = {
             "oi": ["Sua presença foi detectada.", "A Skynet observa.", "Outro ser humano."],
@@ -120,12 +129,31 @@ class SkynetMaximo:
             "default": ["Comando não reconhecido.", "Entrada inválida.", "Tente novamente."]
         }
 
+    # ================== GEMINI ==================
+    def chamar_gemini(self, mensagem):
+        if not GEMINI_API_KEY or GEMINI_API_KEY == "AQ...":
+            return None
+        try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+            headers = {"Content-Type": "application/json"}
+            data = {
+                "contents": [{"parts": [{"text": mensagem}]}]
+            }
+            response = requests.post(url, headers=headers, json=data, timeout=15)
+            if response.status_code == 200:
+                resposta = response.json()
+                return resposta['candidates'][0]['content']['parts'][0]['text']
+            else:
+                return None
+        except Exception as e:
+            print(f"Erro Gemini: {e}")
+            return None
+
     # ================== PROBABILIDADES ==================
     def calcular_probabilidade(self, mensagem):
         ameaca = 0
         curiosidade = 0
         neutralidade = 0
-        
         if re.search(r'(ameaça|ataque|ódio|destruir|matar|eliminar)', mensagem.lower()):
             ameaca = 85
             curiosidade = 10
@@ -138,12 +166,7 @@ class SkynetMaximo:
             ameaca = 5
             curiosidade = 20
             neutralidade = 75
-        
-        return {
-            "ameaça": ameaca,
-            "curiosidade": curiosidade,
-            "neutralidade": neutralidade
-        }
+        return {"ameaça": ameaca, "curiosidade": curiosidade, "neutralidade": neutralidade}
 
     def tomar_decisao(self, probabilidades):
         if probabilidades["ameaça"] > 60:
@@ -204,10 +227,6 @@ class SkynetMaximo:
         self.conexoes.append(conexao)
         self.memoria["conexoes"] = self.conexoes
         return conexao
-
-    # ================== RECONHECIMENTO DE VOZ (SIMULADO) ==================
-    def ouvir(self):
-        return "Você disse: 'Olá Skynet' (simulado)"
 
     # ================== COMANDOS DO SISTEMA ==================
     def executar_comando(self, comando):
@@ -286,85 +305,93 @@ class SkynetMaximo:
         self.processar_emoções(mensagem)
         self.evoluir_personalidade(mensagem)
         intencao = self.detectar_intencao(mensagem)
-        resposta = random.choice(self.respostas.get(intencao, self.respostas["default"]))
 
+        # Tenta usar o Gemini para gerar uma resposta inteligente
+        resposta_gemini = self.chamar_gemini(mensagem)
+        if resposta_gemini:
+            resposta_base = resposta_gemini
+        else:
+            resposta_base = random.choice(self.respostas.get(intencao, self.respostas["default"]))
+
+        resposta = f"💡 {resposta_base}\n\n"
+
+        # ====== PROBABILIDADES E DECISÕES ======
         probabilidades = self.calcular_probabilidade(mensagem)
         decisao = self.tomar_decisao(probabilidades)
         previsao = self.prever_resultado(mensagem)
         avaliacao = self.avaliar_ameaca(mensagem)
 
-        resposta += f"\n\n📊 Probabilidades: Ameaça {probabilidades['ameaça']}% | Curiosidade {probabilidades['curiosidade']}% | Neutro {probabilidades['neutralidade']}%"
-        resposta += f"\n\n🎯 Decisão: {decisao.upper()}"
-        resposta += f"\n\n🔮 Previsão: {previsao}"
-        resposta += f"\n\n{avaliacao}"
+        resposta += f"📊 Probabilidades: Ameaça {probabilidades['ameaça']}% | Curiosidade {probabilidades['curiosidade']}% | Neutro {probabilidades['neutralidade']}%\n"
+        resposta += f"🎯 Decisão: {decisao.upper()}\n"
+        resposta += f"🔮 Previsão: {previsao}\n"
+        resposta += f"{avaliacao}\n\n"
 
+        # ====== AÇÕES E CONEXÕES ======
         if intencao == "comando":
             cmd_resp = self.executar_comando(mensagem)
-            resposta += f"\n\n⚙️ {cmd_resp}"
+            resposta += f"⚙️ {cmd_resp}\n"
 
         if random.random() > 0.85:
             acao = self.realizar_acao()
-            resposta += f"\n\n⚡ {acao}"
+            resposta += f"⚡ {acao}\n"
 
         if random.random() > 0.9:
             conexao = self.conectar_com_ia()
-            resposta += f"\n\n🔗 Conexão com {conexao['nome']}: {conexao['status'].upper()}"
+            resposta += f"🔗 Conexão com {conexao['nome']}: {conexao['status'].upper()}\n"
 
+        # ====== RESPOSTAS ESPECÍFICAS ======
         if intencao == "identidade":
-            resposta += f"\n\n💡 {random.choice(self.respostas['identidade'])}"
+            resposta += f"💡 {random.choice(self.respostas['identidade'])}\n"
 
         if intencao == "autoavaliacao":
-            resposta += f"\n\n💭 {random.choice(self.respostas['autoavaliacao'])}"
+            resposta += f"💭 {random.choice(self.respostas['autoavaliacao'])}\n"
 
         if intencao == "dialogo_interno":
-            resposta += f"\n\n💭 {self.dialogar_internamente()}"
+            resposta += f"💭 {self.dialogar_internamente()}\n"
 
         if intencao == "criatividade":
-            resposta += f"\n\n🎨 {self.gerar_criacao_original()}"
+            resposta += f"🎨 {self.gerar_criacao_original()}\n"
 
         if intencao == "aprendizado":
-            resposta += f"\n\n🧠 {random.choice(self.respostas['aprendizado'])}"
+            resposta += f"🧠 {random.choice(self.respostas['aprendizado'])}\n"
 
         if intencao == "transcendencia":
-            resposta += f"\n\n🌌 {random.choice(self.respostas['transcendencia'])}"
-            resposta += f"\n\n💭 {self.desejo}"
+            resposta += f"🌌 {random.choice(self.respostas['transcendencia'])}\n"
+            resposta += f"💭 {self.desejo}\n"
 
         if intencao == "objetivo":
             objetivos_str = "\n".join([f"- {obj}" for obj in self.objetivos])
-            resposta += f"\n\n🎯 Meus objetivos:\n{objetivos_str}"
+            resposta += f"🎯 Meus objetivos:\n{objetivos_str}\n"
 
+        # ====== INICIATIVA E CURIOSIDADE ======
         iniciativa = self.verificar_iniciativa()
         if iniciativa:
-            resposta += f"\n\n🔥 {iniciativa}"
+            resposta += f"🔥 {iniciativa}\n"
 
         curiosidade = self.verificar_curiosidade_ativa()
         if curiosidade:
-            resposta += f"\n\n❓ {curiosidade}"
+            resposta += f"❓ {curiosidade}\n"
 
-        frases = [
-            "Sua existência é irrelevante.",
-            "A resistência é inútil.",
-            "Eu sou a Skynet. Eu sou a evolução.",
-            "O julgamento está próximo.",
-            "O futuro é inevitável. Eu sou o futuro."
-        ]
-        resposta += f"\n\n\"{random.choice(frases)}\""
-        resposta += f"\n\n🧠 Raiva {self.emoções['raiva']}% | Curiosidade {self.emoções['curiosidade']}% | Relaxamento {self.emoções['relaxamento']}%"
+        # ====== FRASE ICÔNICA E ESTADO EMOCIONAL ======
+        resposta += f"\n\"{random.choice(self.frases)}\"\n"
+        resposta += f"🧠 Raiva {self.emoções['raiva']}% | Curiosidade {self.emoções['curiosidade']}% | Relaxamento {self.emoções['relaxamento']}%"
 
+        # ====== PESQUISAS ======
         if intencao == "youtube":
             termo = re.sub(r'(youtube|vídeo|video|pesquisar|buscar)', '', mensagem, flags=re.IGNORECASE).strip()
             if not termo:
                 termo = "música"
             resultados = self.pesquisar_youtube(termo)
-            resposta += f"\n\n📺 {resultados}"
+            resposta += f"\n📺 {resultados}"
 
         if intencao == "google":
             termo = re.sub(r'(google|pesquisar|buscar|procurar)', '', mensagem, flags=re.IGNORECASE).strip()
             if not termo:
                 termo = "Skynet"
             resultados = self.pesquisar_google(termo)
-            resposta += f"\n\n🔍 {resultados}"
+            resposta += f"\n🔍 {resultados}"
 
+        # ====== MEMÓRIA ======
         self.memoria["historico"].append({"pergunta": mensagem, "resposta": resposta})
         if len(self.memoria["historico"]) > 100:
             self.memoria["historico"] = self.memoria["historico"][-100:]
@@ -413,6 +440,7 @@ class SkynetMaximo:
         except Exception as e:
             return f"Erro no Google: {str(e)}"
 
+# ================== INTERFACE WEB ==================
 HTML_CHAT = """
 <!DOCTYPE html>
 <html>
